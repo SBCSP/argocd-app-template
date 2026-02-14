@@ -5,6 +5,7 @@ set -e
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}================================${NC}"
@@ -16,20 +17,33 @@ echo ""
 ENV_NAME="${1:-}"
 CLUSTER_NAME="${2:-}"
 
-# If no arguments provided, prompt interactively
-if [ -z "$ENV_NAME" ]; then
-    read -p "Enter the environment name (e.g., prod, dev, stage): " ENV_NAME
+# Check if we're being piped (stdin is not a terminal)
+if [ ! -t 0 ]; then
+    # Running via pipe - can't use interactive prompts
     if [ -z "$ENV_NAME" ]; then
         echo -e "${YELLOW}No environment name provided. Using 'dev' as default.${NC}"
         ENV_NAME="dev"
     fi
-fi
-
-if [ -z "$CLUSTER_NAME" ]; then
-    read -p "Enter the Kubernetes cluster name: " CLUSTER_NAME
     if [ -z "$CLUSTER_NAME" ]; then
         echo -e "${YELLOW}No cluster name provided. Using 'cluster-01' as default.${NC}"
         CLUSTER_NAME="cluster-01"
+    fi
+else
+    # Running interactively - can prompt for input
+    if [ -z "$ENV_NAME" ]; then
+        read -p "Enter the environment name (e.g., prod, dev, stage): " ENV_NAME
+        if [ -z "$ENV_NAME" ]; then
+            echo -e "${YELLOW}No environment name provided. Using 'dev' as default.${NC}"
+            ENV_NAME="dev"
+        fi
+    fi
+
+    if [ -z "$CLUSTER_NAME" ]; then
+        read -p "Enter the Kubernetes cluster name: " CLUSTER_NAME
+        if [ -z "$CLUSTER_NAME" ]; then
+            echo -e "${YELLOW}No cluster name provided. Using 'cluster-01' as default.${NC}"
+            CLUSTER_NAME="cluster-01"
+        fi
     fi
 fi
 
