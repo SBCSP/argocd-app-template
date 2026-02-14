@@ -12,18 +12,25 @@ echo -e "${BLUE}  Kubernetes Project Structure Setup${NC}"
 echo -e "${BLUE}================================${NC}"
 echo ""
 
-# Prompt for environment name
-read -p "Enter the environment name (e.g., prod, dev, stage): " ENV_NAME
-if [ -z "$ENV_NAME" ]; then
-    echo -e "${YELLOW}No environment name provided. Using 'dev' as default.${NC}"
-    ENV_NAME="dev"
-fi
+# Check for command-line arguments
+if [ $# -eq 2 ]; then
+    ENV_NAME="$1"
+    CLUSTER_NAME="$2"
+    echo -e "${GREEN}Using arguments: Environment=$ENV_NAME, Cluster=$CLUSTER_NAME${NC}"
+else
+    # Prompt for environment name
+    read -p "Enter the environment name (e.g., prod, dev, stage): " ENV_NAME
+    if [ -z "$ENV_NAME" ]; then
+        echo -e "${YELLOW}No environment name provided. Using 'dev' as default.${NC}"
+        ENV_NAME="dev"
+    fi
 
-# Prompt for cluster name
-read -p "Enter the Kubernetes cluster name: " CLUSTER_NAME
-if [ -z "$CLUSTER_NAME" ]; then
-    echo -e "${YELLOW}No cluster name provided. Using 'cluster-01' as default.${NC}"
-    CLUSTER_NAME="cluster-01"
+    # Prompt for cluster name
+    read -p "Enter the Kubernetes cluster name: " CLUSTER_NAME
+    if [ -z "$CLUSTER_NAME" ]; then
+        echo -e "${YELLOW}No cluster name provided. Using 'cluster-01' as default.${NC}"
+        CLUSTER_NAME="cluster-01"
+    fi
 fi
 
 echo ""
@@ -162,3 +169,5 @@ echo "1. Initialize git repository: git init"
 echo "2. Add secrets to manual/secrets.yaml (already gitignored)"
 echo "3. Customize values in common/values.yaml and env/$ENV_NAME/$CLUSTER_NAME/values.yaml"
 echo "4. Add your Kubernetes manifests to env/$ENV_NAME/$CLUSTER_NAME/templates/"
+echo ""
+echo -e "${GREEN}Happy deploying! 🚀${NC}"
