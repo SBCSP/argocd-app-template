@@ -4,33 +4,44 @@ A bootstrap script to quickly scaffold the standard folder structure for ArgoCD-
 
 ## Quick Start
 
-Run this one-liner to scaffold your project structure:
+Run this one-liner with your environment and cluster names:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/SBCSP/argocd-app-template/main/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/SBCSP/argocd-app-template/main/bootstrap.sh | bash -s <environment> <cluster>
 ```
 
-Or for a safer two-step approach (recommended):
+**Example:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/SBCSP/argocd-app-template/main/bootstrap.sh | bash -s prod us-east-1
+```
+
+Or for a safer two-step approach with interactive prompts:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/SBCSP/argocd-app-template/main/bootstrap.sh -o bootstrap.sh
 chmod +x bootstrap.sh
 ./bootstrap.sh
 ```
 
-## What It Does
+## Arguments
 
-The script will interactively prompt you for:
-- **Environment name** (e.g., `prod`, `dev`, `stage`)
-- **Kubernetes cluster name** (e.g., `us-east-1`, `prod-cluster`)
+| Argument | Position | Description | Default |
+|----------|----------|-------------|---------|
+| `environment` | 1 | Environment name (e.g., `prod`, `dev`, `stage`) | `dev` |
+| `cluster` | 2 | Kubernetes cluster name (e.g., `us-east-1`, `prod-cluster`) | `cluster-01` |
 
-Then it creates this structure:
+**Piped execution** (`curl | bash -s`): Arguments are required or defaults are used (no interactive prompts).
+
+**Direct execution** (`./bootstrap.sh`): If arguments are omitted, the script will prompt interactively.
+
+## What It Creates
+
 ```
 ├── chart/
 │   └── Chart.yaml           # Root Helm chart metadata
 ├── common/
 │   └── values.yaml          # Shared values across environments
 ├── env/
-│   └── {environment_name}/
-│       └── {cluster_name}/
+│   └── {environment}/
+│       └── {cluster}/
 │           ├── Chart.yaml       # Environment-specific chart
 │           ├── config.yaml      # Cluster configuration
 │           ├── templates/       # Kubernetes manifests
@@ -47,17 +58,17 @@ Then it creates this structure:
 After running the bootstrap script:
 
 1. **Initialize your git repository:**
-```bash
+   ```bash
    git init
    git add .
    git commit -m "Initial commit: ArgoCD app structure"
-```
+   ```
 
 2. **Push to your Git provider:**
-```bash
+   ```bash
    git remote add origin <your-repo-url>
    git push -u origin main
-```
+   ```
 
 3. **Add your Kubernetes manifests** to `env/{environment}/{cluster}/templates/`
 
@@ -81,7 +92,8 @@ helm upgrade --install my-app env/{environment}/{cluster}/ \
 
 ## Features
 
-- ✅ Interactive environment and cluster configuration
+- ✅ Non-interactive piped execution with arguments
+- ✅ Interactive prompts when run directly
 - ✅ Pre-configured `.gitignore` for secrets
 - ✅ Helm chart structure ready for ArgoCD
 - ✅ Common values inheritance pattern
